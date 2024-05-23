@@ -1,8 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
-import { AppCategory } from './appCategory.entities';
-import { BlogCategory } from './blogCategory.entities';
-import { Status } from './status.entities';
+import { Document } from 'mongoose';
+import { AppCategory, BlogCategory } from 'src/types/category';
+
+export enum StatusEnum {
+  ACTIVE = 'active',
+  IN_ACTIVE = 'in_active',
+  SCHEDULE = 'schedule',
+  DELETE = 'delete',
+  IN_REVIEW = 'in_review'
+}
 
 @Schema({ timestamps: true })
 export class Blog extends Document {
@@ -12,23 +18,23 @@ export class Blog extends Document {
   @Prop({ required: true })
   short_description: string;
 
-  @Prop({type: mongoose.Schema.Types.ObjectId, required: true, ref: "AppCategory"})
+  @Prop({ type: Object, required: true })
   app_category: AppCategory;
 
-  @Prop({type: mongoose.Schema.Types.ObjectId, required: true, ref: "BlogCategory"})
+  @Prop({ type: Object, required: true })
   blog_category: BlogCategory;
 
   @Prop({ required: true })
   mainBanner: string;
 
-  @Prop()
-  scheduleDate?: number;
-
-  @Prop({type: mongoose.Schema.Types.ObjectId, required: true, ref: "Status"})
-  status: Status;
+  @Prop({ required: true })
+  status: StatusEnum;
 
   @Prop({ required: true })
   description: string;
+
+  @Prop({ type: Date, required: true })
+  publishedAt: Date;
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);

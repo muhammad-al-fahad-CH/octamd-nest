@@ -28,7 +28,7 @@ export class AppDto {
 
     @IsString()
     @IsNotEmpty()
-    scheduleDate: string
+    publishedAt: string
 
     @IsFile()
     @IsDefined()

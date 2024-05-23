@@ -7,12 +7,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import serverConfig from './config/server.config';
 import { CategoryModule } from './category/category.module';
-import { AppCategory, AppCategorySchema } from './entities/appCategory.entities';
-import { BlogCategory, BlogCategorySchema } from './entities/blogCategory.entities';
-import { Status, StatusSchema } from './entities/status.entities';
 import { AuthModule } from './auth/auth.module';
 import { AuthMiddleware } from './middleware/auth.middleware';
 import { JwtService } from '@nestjs/jwt';
+import { Category, CategorySchema } from './entities/category.entities';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -22,9 +20,7 @@ import { JwtService } from '@nestjs/jwt';
   MongoDBModule, 
   MongooseModule.forFeature([
     { name: Blog.name, schema: BlogSchema },
-    { name: AppCategory.name, schema: AppCategorySchema },
-    { name: BlogCategory.name, schema: BlogCategorySchema },
-    { name: Status.name, schema: StatusSchema }
+    { name: Category.name, schema: CategorySchema },
   ]),
   CategoryModule,
   AuthModule

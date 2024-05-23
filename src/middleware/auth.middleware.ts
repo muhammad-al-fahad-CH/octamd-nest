@@ -16,7 +16,7 @@ export class AuthMiddleware implements NestMiddleware {
         if (authToken && authToken.startsWith('Bearer ')) {
             const token = authToken.split(' ')[1];
             try {
-                const decoded = this.jwtService.verifyAsync(token, {
+                const decoded = this.jwtService.verify(token, {
                     secret: JWT_SECRET,
                 });
                 req.user = decoded;

@@ -43,14 +43,9 @@ export class AppController {
         });
       }
 
-      const timestamp = Date.parse('2024-05-23T05:35:00.000Z');
-      const currentTimeStamp = Date.now();
-
       return Promise.resolve(res.status(HttpStatus.OK).json({
         success: true,
-        blogs,
-        timestamp,
-        currentTimeStamp
+        blogs
       }));
     } catch(error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -121,14 +116,14 @@ export class AppController {
   @Post()
   @UseInterceptors(FileInterceptor('file', multerOptions))
   async createBlog(
-    @Req() req: AppDto,
+    @Req() req: Request,
     @UploadedFile() file: AppDto['file'],
     @Res() res: Response
   ): Promise<Response> {
     try {
-      const { title, shortDescription, appCategory, blogCategory, status, description, scheduleDate }: inputBlog = req;
+      const { title, shortDescription, appCategory, blogCategory, status, description, publishedAt } = req.body;
       const mainBanner = `${process.env.API_URL}/${file.path}`;
-      const blog = await this.appService.createBlog(title, shortDescription, appCategory, blogCategory, mainBanner, status, description, scheduleDate);
+      const blog = await this.appService.createBlog(title, shortDescription, appCategory, blogCategory, mainBanner, status, description, publishedAt);
       if(blog instanceof Error) {
         return res.status(HttpStatus.NOT_FOUND).json({
           success: false,
@@ -153,9 +148,9 @@ export class AppController {
     @Res() res: Response
   ): Promise<Response> {
     try {
-      const { title, shortDescription, appCategory, blogCategory, status, description, scheduleDate }: inputBlog = req.body;
+      const { title, shortDescription, appCategory, blogCategory, status, description, publishedAt } = req.body;
       const mainBanner = `${process.env.API_URL}/${file.path}`;
-      const blog = await this.appService.updateBlog(id, title, shortDescription, appCategory, blogCategory, mainBanner, status, description, scheduleDate);
+      const blog = await this.appService.updateBlog(id, title, shortDescription, appCategory, blogCategory, mainBanner, status, description, publishedAt);
       if(blog instanceof Error) {
         return res.status(HttpStatus.NOT_FOUND).json({
           success: false,

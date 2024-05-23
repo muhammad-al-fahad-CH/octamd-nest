@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from "mongoose"
-import { Login } from 'src/entities/login.entities';
+import { User } from 'src/entities/user.entities';
 import * as bcrypt from 'bcrypt';
 import { AuthHelper } from './authHelper';
 
@@ -9,7 +9,7 @@ import { AuthHelper } from './authHelper';
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(Login.name) private readonly loginModel: Model<Login>,
+    @InjectModel(User.name) private readonly loginModel: Model<User>,
     private authHelper: AuthHelper
 ) {}
 

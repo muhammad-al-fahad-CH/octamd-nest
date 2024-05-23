@@ -1,9 +1,9 @@
 export interface inputBlog {
-    title: string,
-    shortDescription: string,
-    appCategory: string,
-    blogCategory: string,
-    status: string,
-    description: string,
-    scheduleDate: string
+    readonly title: string,
+    readonly shortDescription: string,
+    readonly appCategory: string,
+    readonly blogCategory: string,
+    readonly status: string,
+    readonly description: string,
+    readonly publishedAt: string
 }
