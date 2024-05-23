@@ -89,10 +89,11 @@ postCategory(): Promise<Category | Error> {
 
   // Blog Category
 
-  async createBlogCategory(name: string): Promise<BlogCategory | Error> {
+  async createBlogCategory(name: string, app: string): Promise<BlogCategory | Error> {
     return new Promise(async (resolve, reject) => {
       const blogCategory = await this.blogModel.create({
-        name
+        name,
+        app
       });
       const result = await blogCategory.save();
       return resolve(result);

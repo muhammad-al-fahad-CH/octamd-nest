@@ -68,8 +68,8 @@ export class CategoryController {
   }
 
   @Post('blog')
-  async createBlogCategory(@Body('name') category: string, @Res() res: Response): Promise<Response> {
-    const newCategory = await this.categoryService.createBlogCategory(category);
+  async createBlogCategory(@Body('name') category: string, @Body('app') app: string, @Res() res: Response): Promise<Response> {
+    const newCategory = await this.categoryService.createBlogCategory(category, app);
     return res.status(HttpStatus.OK).json({success: true, newCategory});
   }
 
