@@ -153,33 +153,33 @@ export class AppService {
     })
   }
 
-  @Cron(CronExpression.EVERY_30_SECONDS, {
-    name: 'Publish Blog Test',
-    timeZone: 'Asia/Karachi'
-  })
-  handleCron() {
-    this.logger.debug('Called every 30 seconds');
-  }
+  // @Cron(CronExpression.EVERY_30_SECONDS, {
+  //   name: 'Publish Blog Test',
+  //   timeZone: 'Asia/Karachi'
+  // })
+  // handleCron() {
+  //   this.logger.debug('Called every 30 seconds');
+  // }
 
-  @Cron(CronExpression.EVERY_10_MINUTES, {
-    name: 'Publish Blog',
-    timeZone: 'Asia/Karachi'
-  })
-  async setBlogStatus() {
-    this.logger.debug("setBlogStatus Function is running...");
-    const blog = await this.blogModel.find<Blog>({});
-    if(!blog) return;
+  // @Cron(CronExpression.EVERY_10_MINUTES, {
+  //   name: 'Publish Blog',
+  //   timeZone: 'Asia/Karachi'
+  // })
+  // async setBlogStatus() {
+  //   this.logger.debug("setBlogStatus Function is running...");
+  //   const blog = await this.blogModel.find<Blog>({});
+  //   if(!blog) return;
 
-    const activeStatus = await this.statusModel.findOne({name: 'active'})
-    const publishedStatus = await this.statusModel.findOne({name: 'schedule'})
+  //   const activeStatus = await this.statusModel.findOne({name: 'active'})
+  //   const publishedStatus = await this.statusModel.findOne({name: 'schedule'})
 
-    for(let i = 0; i < blog.length; i++) {
-      if(blog[i].scheduleDate && blog[i].status === publishedStatus._id && blog[i].scheduleDate < Date.now()){
-        await this.blogModel.findByIdAndUpdate<Blog>(blog[i]._id, {
-          status: activeStatus._id
-        })
-        this.logger.debug("Blog Scheduled: \n", blog[i]);
-      }
-    }
-  }
+  //   for(let i = 0; i < blog.length; i++) {
+  //     if(blog[i].scheduleDate && blog[i].status === publishedStatus._id && blog[i].scheduleDate < Date.now()){
+  //       await this.blogModel.findByIdAndUpdate<Blog>(blog[i]._id, {
+  //         status: activeStatus._id
+  //       })
+  //       this.logger.debug("Blog Scheduled: \n", blog[i]);
+  //     }
+  //   }
+  // }
 }

@@ -5,7 +5,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppCategory, AppCategorySchema } from 'src/entities/appCategory.entities';
 import { BlogCategory, BlogCategorySchema } from 'src/entities/blogCategory.entities';
 import { Status, StatusSchema } from 'src/entities/status.entities';
-import { Category, CategorySchema } from 'src/entities/category.entities';
 
 @Module({
   imports: [
@@ -13,7 +12,6 @@ import { Category, CategorySchema } from 'src/entities/category.entities';
     { name: AppCategory.name, schema: AppCategorySchema },
     { name: BlogCategory.name, schema: BlogCategorySchema },
     { name: Status.name, schema: StatusSchema },
-    { name: Category.name, schema: CategorySchema}
   ])
 ],
   controllers: [CategoryController],

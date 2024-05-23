@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from "mongoose"
 import { BlogCategory } from 'src/entities/blogCategory.entities';
-import { Category } from 'src/entities/category.entities';
 import { AppCategory } from 'src/entities/appCategory.entities';
 import { Status } from 'src/entities/status.entities';
 
@@ -11,32 +10,20 @@ export class CategoryService {
   constructor(
     @InjectModel(AppCategory.name) private readonly appModel: Model<AppCategory>,
     @InjectModel(BlogCategory.name) private readonly blogModel: Model<BlogCategory>,
-    @InjectModel(Status.name) private readonly statusModel: Model<Status>,
-    @InjectModel(Category.name) private readonly categoryModel: Model<Category>,
+    @InjectModel(Status.name) private readonly statusModel: Model<Status>
 ) {}
 
-getCategories(): Promise<Category | Error> {
-  return new Promise(async (resolve, reject) => {
-    const categories = await this.categoryModel.find({});
-    if(!categories) return resolve(new Error('No categories found'));
-    return resolve(categories[0]);
-  });
-}
-
-postCategory(): Promise<Category | Error> {
+getCategories(): Promise<any> {
   return new Promise(async (resolve, reject) => {
     const app_category = await this.appModel.find({});
     const blog_category = await this.blogModel.find({});
     const status_category = await this.statusModel.find({});
 
-    const newCategory = await this.categoryModel.create({
+    return resolve({
       app_category,
       blog_category,
       status_category
     });
-
-    const result = await newCategory.save();
-    return resolve(result);
   });
 }
 

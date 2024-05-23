@@ -6,6 +6,7 @@ import { multerOptions } from './config/multer.config';
 import { inputBlog } from './types/blog';
 import { queryBlog } from './types/filter';
 import { Blog } from './entities/blog.entities';
+import { AppDto } from './dto/app.dto';
 
 @Controller('blog')
 export class AppController {
@@ -120,12 +121,12 @@ export class AppController {
   @Post()
   @UseInterceptors(FileInterceptor('file', multerOptions))
   async createBlog(
-    @Req() req: Request,
-    @UploadedFile() file: any,
+    @Req() req: AppDto,
+    @UploadedFile() file: AppDto['file'],
     @Res() res: Response
   ): Promise<Response> {
     try {
-      const { title, shortDescription, appCategory, blogCategory, status, description, scheduleDate }: inputBlog = req.body;
+      const { title, shortDescription, appCategory, blogCategory, status, description, scheduleDate }: inputBlog = req;
       const mainBanner = `${process.env.API_URL}/${file.path}`;
       const blog = await this.appService.createBlog(title, shortDescription, appCategory, blogCategory, mainBanner, status, description, scheduleDate);
       if(blog instanceof Error) {

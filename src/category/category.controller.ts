@@ -14,12 +14,6 @@ export class CategoryController {
     return res.status(HttpStatus.OK).json({success: true, getAllCategories});
   }
 
-  @Post()
-  async createCategory(@Res() res: Response): Promise<Response> {
-    const newCategory = await this.categoryService.postCategory();
-    return res.status(HttpStatus.OK).json({success: true, newCategory});
-  }
-
   // App Category
 
   @Get('app')
