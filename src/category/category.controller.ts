@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { Response } from 'express'
+import { Response, Request } from 'express'
+import { IAppCategory } from 'src/types/appCategory';
 
 @Controller('category')
 export class CategoryController {
@@ -19,7 +20,7 @@ export class CategoryController {
     return res.status(HttpStatus.OK).json({success: true, newCategory});
   }
 
-  // Portal Category
+  // App Category
 
   @Get('app')
   async getAppCategories(@Res() res: Response): Promise<Response> {
@@ -29,14 +30,16 @@ export class CategoryController {
   }
 
   @Post('app')
-  async createAppCategory(@Body('name') name: string, @Res() res: Response): Promise<Response> {
-    const newCategory = await this.categoryService.createAppCategory(name);
+  async createAppCategory(@Req() req: Request, @Res() res: Response): Promise<Response> {
+    const { name, blog }: IAppCategory = req.body;
+    const newCategory = await this.categoryService.createAppCategory(name, blog);
     return res.status(HttpStatus.OK).json({success: true, newCategory});
   }
 
   @Put('app/:id')
-  async putAppCategorie(@Param('id') id: string, @Body('name') category: string, @Res() res: Response): Promise<Response> {
-    const updateCategory = await this.categoryService.putAppCategorie(id, category);
+  async putAppCategorie(@Param('id') id: string, @Req() req: Request, @Res() res: Response): Promise<Response> {
+    const { name, blog }: IAppCategory = req.body;
+    const updateCategory = await this.categoryService.putAppCategorie(id, name, blog);
     if(updateCategory instanceof Error) return res.status(HttpStatus.NOT_FOUND).json({success: false, message: updateCategory.message});
     return res.status(HttpStatus.OK).json({success: true, updateCategory});
   }
@@ -49,6 +52,13 @@ export class CategoryController {
   }
 
   // Blog Category
+
+   @Get('app/:id')
+  async getBlogByAppNameCategories(@Param('id') app: string, @Res() res: Response): Promise<Response> {
+    const categories = await this.categoryService.getBlogByAppNameCategories(app);
+    if(categories instanceof Error) return res.status(HttpStatus.NOT_FOUND).json({success: false, message: categories.message});
+    return res.status(HttpStatus.OK).json({success: true, categories});
+  }
 
   @Get('blog')
   async getBlogCategories(@Res() res: Response): Promise<Response> {

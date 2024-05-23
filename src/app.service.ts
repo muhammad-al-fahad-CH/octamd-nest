@@ -171,7 +171,7 @@ export class AppService {
     if(!blog) return;
 
     const activeStatus = await this.statusModel.findOne({name: 'active'})
-    const publishedStatus = await this.statusModel.findOne({name: 'created'})
+    const publishedStatus = await this.statusModel.findOne({name: 'schedule'})
 
     for(let i = 0; i < blog.length; i++) {
       if(blog[i].scheduleDate && blog[i].status === publishedStatus._id && blog[i].scheduleDate < Date.now()){

@@ -32,13 +32,13 @@ import { JwtService } from '@nestjs/jwt';
   controllers: [AppController],
   providers: [AppService, JwtService],
 })
-export class AppModule {
-  // configure(consumer: MiddlewareConsumer) {
-  //   consumer.apply(AuthMiddleware).exclude(
-  //     {
-  //       path: 'blog',
-  //       method: RequestMethod.GET,
-  //     },
-  //   ).forRoutes(AppController);
-  // }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).exclude(
+      {
+        path: 'blog',
+        method: RequestMethod.GET,
+      },
+    ).forRoutes(AppController);
+  }
 }

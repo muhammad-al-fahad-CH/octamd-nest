@@ -40,12 +40,13 @@ postCategory(): Promise<Category | Error> {
   });
 }
 
-// Portal Category
+// App Category
 
-  async createAppCategory(name: string): Promise<AppCategory | Error> {
+  async createAppCategory(name: string, blog: string): Promise<AppCategory | Error> {
     return new Promise(async (resolve, reject) => {
       const appCategory = await this.appModel.create({
-        name
+        name,
+        blog
       });
       const result = await appCategory.save();
       return resolve(result);
@@ -60,11 +61,19 @@ postCategory(): Promise<Category | Error> {
     });
   }
 
-  async putAppCategorie(id: string, name: string): Promise<AppCategory | Error> {
+  getBlogByAppNameCategories(app: string): Promise<BlogCategory[] | Error> {
+    return new Promise(async (resolve, reject) => {
+      const blogCategories = await this.blogModel.find({ app });
+      if(!blogCategories.length) return resolve(new Error(`No blog found for ${name}`));
+      return resolve(blogCategories);
+    });
+  }
+
+  async putAppCategorie(id: string, name: string, blog: string): Promise<AppCategory | Error> {
     return new Promise(async (resolve, reject) => {
       const findCategory = await this.appModel.findById(id);
       if(!findCategory) return resolve(new Error('Not found'));
-      const appCategorie = await this.appModel.findByIdAndUpdate(id, { name });
+      const appCategorie = await this.appModel.findByIdAndUpdate(id, { name, blog });
       return resolve(appCategorie);
     });
   }

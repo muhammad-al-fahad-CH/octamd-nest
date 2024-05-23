@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable, NestMiddleware } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response, NextFunction } from 'express';
+import { JWT_SECRET } from 'src/auth/constant';
 
 interface CustomRequest extends Request {
     user: any;
@@ -15,7 +16,9 @@ export class AuthMiddleware implements NestMiddleware {
         if (authToken && authToken.startsWith('Bearer ')) {
             const token = authToken.split(' ')[1];
             try {
-                const decoded = this.jwtService.verify(token);
+                const decoded = this.jwtService.verifyAsync(token, {
+                    secret: JWT_SECRET,
+                });
                 req.user = decoded;
                 next();
             } catch (err) {
