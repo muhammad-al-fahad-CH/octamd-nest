@@ -28,8 +28,12 @@ export class AuthService {
           token: this.authHelper.token(payload)
         })
       } else {
-        const admin = await this.loginModel.findOne({email: email, password: password});
-        if(!admin) return resolve(new Error('email / password incorrect. please enter right email / password'));
+        const admin = await this.loginModel.findOne({ email });
+        if(!admin) return resolve(new Error('email is incorrect'));
+
+        const validatePassword = await bcrypt.compare(password, admin.password);
+        if(!validatePassword) return resolve(new Error('password is incorrect'));
+
         const payload = {_id: admin._id, email: admin.email}
         return resolve({
           admin: {
