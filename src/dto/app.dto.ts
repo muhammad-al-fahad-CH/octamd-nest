@@ -1,5 +1,6 @@
-import { IsDefined, IsNotEmpty, IsString } from "class-validator"
+import { IsArray, IsDefined, IsNotEmpty, IsObject, IsString } from "class-validator"
 import { IsFile } from "nestjs-form-data"
+import { Files } from "src/types/blog"
 
 export class AppDto {
     @IsString()
@@ -21,6 +22,10 @@ export class AppDto {
     @IsString()
     @IsNotEmpty()
     status: string
+
+    @IsArray()
+    @IsNotEmpty()
+    mainBanner: Files[]
 
     @IsString()
     @IsNotEmpty()

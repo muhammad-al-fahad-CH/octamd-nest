@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from "mongoose"
-import { User } from 'src/entities/user.entities';
-import * as bcrypt from 'bcrypt';
+import { User } from 'src/datasource/entities/user.entities';
 import { AuthHelper } from './authHelper';
-
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(User.name) private readonly loginModel: Model<User>,
+    @InjectRepository(User) private readonly loginModel: Repository<User>,
     private authHelper: AuthHelper
 ) {}
 
@@ -18,9 +17,9 @@ export class AuthService {
       const findAdmin = await this.loginModel.find({});
       if(findAdmin.length < 1 || findAdmin === null) {
         const hashPassword = await bcrypt.hash('admin', 10);
-        const newLogin = await this.loginModel.create({email: 'admin@gmail.com', password: hashPassword});
-        const result = await newLogin.save()
-        const payload = {_id: result._id, email: result.email}
+        const newLogin = this.loginModel.create({email: 'admin@gmail.com', password: hashPassword});
+        const result = await this.loginModel.save(newLogin);
+        const payload = {id: result.id, email: result.email}
         return resolve({
           admin: {
             email: result.email,
@@ -28,16 +27,16 @@ export class AuthService {
           token: this.authHelper.token(payload)
         })
       } else {
-        const admin = await this.loginModel.findOne({ email });
+        const admin = await this.loginModel.findOne({ where: { email } });
         if(!admin) return resolve(new Error('email is incorrect'));
 
         const validatePassword = await bcrypt.compare(password, admin.password);
         if(!validatePassword) return resolve(new Error('password is incorrect'));
 
-        const payload = {_id: admin._id, email: admin.email}
+        const payload = {id: admin.id, email: admin.email}
         return resolve({
           admin: {
-            id: admin._id,
+            id: admin.id,
             email: admin.email,
           },
           token: this.authHelper.token(payload)

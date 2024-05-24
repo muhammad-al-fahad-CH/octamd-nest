@@ -1,19 +1,21 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Query, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Query, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Response, Request } from "express"
-import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from './config/multer.config';
 import { inputBlog } from './types/blog';
 import { queryBlog } from './types/filter';
-import { Blog } from './entities/blog.entities';
-import { AppDto } from './dto/app.dto';
+import { Blog } from './datasource/entities/blog.entities';
+import { Jwt } from './decorator/jwt.decorator';
+import { auth } from './types/auth';
 
 @Controller('blog')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  async getBlogs(@Req() req: Request, @Res() res: Response): Promise<Response> {
+  async getBlogs(
+    @Req() req: Request, 
+    @Res() res: Response
+  ): Promise<Response> {
     try {
       const { app, blog, status }: queryBlog = req.query;
       let blogs: Blog[] | Error = [];
@@ -53,7 +55,11 @@ export class AppController {
   }
 
   @Get('admin')
-  async getBlogsbyAdmin(@Req() req: Request, @Res() res: Response): Promise<Response> {
+  async getBlogsbyAdmin(
+    @Jwt() user: auth,
+    @Req() req: Request, 
+    @Res() res: Response
+  ): Promise<Response> {
     try {
       const { app, blog, status }: queryBlog = req.query;
       let blogs: Blog[] | Error = [];
@@ -93,7 +99,10 @@ export class AppController {
   }
 
   @Get(':id')
-  async getBlog(@Param('id') id: string, @Res() res: Response): Promise<Response> {
+  async getBlog(
+    @Param('id') id: string, 
+    @Res() res: Response
+  ): Promise<Response> {
     try {
       const blog = await this.appService.getBlog(id);
 
@@ -114,15 +123,13 @@ export class AppController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('file', multerOptions))
   async createBlog(
+    @Jwt() user: auth,
     @Req() req: Request,
-    @UploadedFile() file: AppDto['file'],
     @Res() res: Response
   ): Promise<Response> {
     try {
-      const { title, shortDescription, appCategory, blogCategory, status, description, publishedAt } = req.body;
-      const mainBanner = `${process.env.API_URL}/${file.path}`;
+      const { title, shortDescription, appCategory, blogCategory, mainBanner, status, description, publishedAt }: inputBlog = req.body;
       const blog = await this.appService.createBlog(title, shortDescription, appCategory, blogCategory, mainBanner, status, description, publishedAt);
       if(blog instanceof Error) {
         return res.status(HttpStatus.NOT_FOUND).json({
@@ -140,16 +147,14 @@ export class AppController {
   }
 
   @Put(':id')
-  @UseInterceptors(FileInterceptor('file', multerOptions))
   async updateBlog(
+    @Jwt() user: auth,
     @Param('id') id: string,
     @Req() req: Request,
-    @UploadedFile() file: any,
     @Res() res: Response
   ): Promise<Response> {
     try {
-      const { title, shortDescription, appCategory, blogCategory, status, description, publishedAt } = req.body;
-      const mainBanner = `${process.env.API_URL}/${file.path}`;
+      const { title, shortDescription, appCategory, blogCategory, mainBanner, status, description, publishedAt }: inputBlog = req.body;
       const blog = await this.appService.updateBlog(id, title, shortDescription, appCategory, blogCategory, mainBanner, status, description, publishedAt);
       if(blog instanceof Error) {
         return res.status(HttpStatus.NOT_FOUND).json({
@@ -168,7 +173,11 @@ export class AppController {
   }
 
   @Delete(':id')
-  async deleteBlog(@Param('id') id: string, @Res() res: Response): Promise<Response> {
+  async deleteBlog(
+    @Jwt() user: auth,
+    @Param('id') id: string, 
+    @Res() res: Response
+  ): Promise<Response> {
     try {
       const blog = await this.appService.rmBlog(id);
       if(blog instanceof Error) {

@@ -1,40 +1,41 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BlogSchema, Blog } from './entities/blog.entities';
-import { MongoDBModule } from './database/database.module';
-import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import serverConfig from './config/server.config';
 import { CategoryModule } from './category/category.module';
 import { AuthModule } from './auth/auth.module';
-import { AuthMiddleware } from './middleware/auth.middleware';
 import { JwtService } from '@nestjs/jwt';
-import { Category, CategorySchema } from './entities/category.entities';
+import { FileUploaderModule } from './file-uploader/file-uploader.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import typeorm from './config/orm.config';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ConfigEnum } from './config';
+import { Blog } from './datasource/entities/blog.entities';
+import { Category } from './datasource/entities/category.entities';
 
 @Module({
   imports: [ConfigModule.forRoot({
     isGlobal: true,
-    load: [serverConfig]
+    load: [typeorm, serverConfig]
   }),
-  MongoDBModule, 
-  MongooseModule.forFeature([
-    { name: Blog.name, schema: BlogSchema },
-    { name: Category.name, schema: CategorySchema },
-  ]),
+  TypeOrmModule.forRootAsync({
+    imports: [ConfigModule],
+    useFactory: (configService: ConfigService) =>
+      configService.get<Promise<TypeOrmModuleOptions>>(ConfigEnum.TYPEORM),
+    inject: [ConfigService],
+  }),
+  TypeOrmModule.forFeature([Blog, Category]),
+  ServeStaticModule.forRoot({
+    rootPath: join(__dirname, '..', 'uploads'),
+    serveRoot: '/uploads',
+  }),
   CategoryModule,
-  AuthModule
+  AuthModule,
+  FileUploaderModule
 ],
   controllers: [AppController],
   providers: [AppService, JwtService],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).exclude(
-      {
-        path: 'blog',
-        method: RequestMethod.GET,
-      },
-    ).forRoutes(AppController);
-  }
-}
+export class AppModule {}

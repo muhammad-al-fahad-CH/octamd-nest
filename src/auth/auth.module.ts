@@ -1,17 +1,15 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from 'src/entities/user.entities';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { JWT_SECRET } from './constant';
 import { AuthHelper } from './authHelper';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/datasource/entities/user.entities';
 
 @Module({
   imports: [
-  MongooseModule.forFeature([
-    { name: User.name, schema: UserSchema}
-  ]),
+  TypeOrmModule.forFeature([User]),
   JwtModule.register({
     secret: JWT_SECRET,
     signOptions: { expiresIn: 60 * 60 * 60 },

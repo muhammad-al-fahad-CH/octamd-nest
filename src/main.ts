@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from "@nestjs/config";
 import { ConfigEnum, IServerConfig } from './config';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule); // To create HTTP Server
@@ -19,7 +19,7 @@ async function bootstrap() {
   }); // To enable cross origin resource sharing where we can send data from server to client.
 
   app.setGlobalPrefix(ENDPOINT_PREFIX); // https://localhost:4000 normally server run on this route but we assign the additional to get routes from that route.
-
+  app.useGlobalPipes(new ValidationPipe());
   await app.listen(SERVER_PORT); // To set the PORT for running
 
   logger.log(`Application is running on: ${await app.getUrl()}`); // To show in terminal when server is successfully run
